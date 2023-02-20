@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model drink {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique @db.VarChar
+  photo_url        String?            @db.VarChar
+  drink_ingredient drink_ingredient[]
+}
+
+model drink_ingredient {
+  id            Int        @id @default(autoincrement())
+  drink_id      Int
+  description   String     @db.VarChar
+  display_order Int
+  ingredient_id String     @db.VarChar
+  drink         drink      @relation(fields: [drink_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ingredient    ingredient @relation(fields: [ingredient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ingredient {
+  id               String             @id @default(dbgenerated("nextval('ingredient_id_seq'::regclass)")) @db.VarChar
+  name             String             @unique @db.VarChar
+  in_stock         Boolean            @default(false)
+  drink_ingredient drink_ingredient[]
+}
